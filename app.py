@@ -2,6 +2,8 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
+import os
+import requests
 
 # عنوان المشروع
 st.title("COVID-19 X-ray Detection System")
@@ -13,7 +15,18 @@ st.warning(
 )
 
 # تحميل الموديل
-model = tf.keras.models.load_model("covid_normal_model.keras")
+MODEL_URL = "https://github.com/reham-covid-xray/covid-xray-system/releases/download/v1.0/covid_normal_model.keras"
+MODEL_PATH = "covid_normal_model.keras"
+
+if not os.path.exists(MODEL_PATH):
+   with st.spinner("Downloading AI model..."):
+    response = requests.get(MODEL_URL)
+response.raise_for_status()
+
+with open(MODEL_PATH, "wb") as f:
+        f.write(response.content)
+
+model = tf.keras.models.load_model(MODEL_PATH)
 
 # رفع الصورة
 uploaded_file = st.file_uploader(
